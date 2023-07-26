@@ -9,3 +9,6 @@ const usersRouter = Router()
 usersRouter.post('/register', registerValidator, wrapRequestHandler(registerController))
 
 export default usersRouter
+
+// class errorWithStatus
+// 
