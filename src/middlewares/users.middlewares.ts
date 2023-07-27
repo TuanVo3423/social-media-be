@@ -4,6 +4,7 @@ import { USER_MESSAGES } from '~/constants/message'
 import { ErrorWithStatus } from '~/models/Errors'
 import databaseServices from '~/services/database.services'
 import userServices from '~/services/users.services'
+import { hashPassword } from '~/utils/crypto'
 import { validate } from '~/utils/validation'
 
 export const loginValidator = validate(
@@ -18,9 +19,12 @@ export const loginValidator = validate(
       trim: true,
       custom: {
         options: async (value, { req }) => {
-          const user = await databaseServices.users.findOne({ email: value })
+          const user = await databaseServices.users.findOne({ email: value, password: hashPassword(req.body.password) })
           if (user === null) {
-            throw new ErrorWithStatus({ message: USER_MESSAGES.USER_NOT_FOUND, status: HTTP_STATUS.NOT_FOUND })
+            throw new ErrorWithStatus({
+              message: USER_MESSAGES.EMAIL_OR_PASSWORD_IS_INCORRECT,
+              status: HTTP_STATUS.NOT_FOUND
+            })
           }
           req.user = user
           return true
@@ -130,16 +134,6 @@ export const registerValidator = validate(
         },
         errorMessage: USER_MESSAGES.CONFIRM_PASSWORD_LENGTH_MUST_BE_FROM_6_TO_50
       },
-      // isStrongPassword: {
-      //   options: {
-      //     minLength: 6,
-      //     minLowercase: 1,
-      //     minUppercase: 1,
-      //     minSymbols: 1
-      //   },
-      //   errorMessage:
-      //     'Your password must be at least 6 characters long, contain at least 1 lowercase letter, 1 uppercase letter, and 1 symbol.'
-      // },
       custom: {
         options: (value, { req }) => {
           if (value !== req.body.password) {
