@@ -44,3 +44,6 @@ export class ErrorWithStatus {
   }
 }
 ```
+
+##### 3.Error in validation area 
+When Throw new Error 

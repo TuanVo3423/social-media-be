@@ -1,5 +1,5 @@
 import express from 'express'
-import { body, validationResult, ValidationChain } from 'express-validator'
+import { ValidationChain, validationResult } from 'express-validator'
 import { RunnableValidationChains } from 'express-validator/src/middlewares/schema'
 import { HTTP_STATUS } from '~/constants/httpStatus'
 import { EntityError, ErrorWithStatus } from '~/models/Errors'
@@ -19,8 +19,8 @@ export const validate = (validation: RunnableValidationChains<ValidationChain>) 
     // neu loi khong phai validator : 422
     for (const key in errorsObject) {
       const { msg } = errorsObject[key]
+
       if (msg instanceof ErrorWithStatus && msg.status !== HTTP_STATUS.UNPROCESSABLE_ENTITY) {
-        // console.log('msg: ', msg)
         return next(msg)
       }
       entityError.errors[key] = errorsObject[key]
