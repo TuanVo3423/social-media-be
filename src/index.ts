@@ -1,7 +1,10 @@
 import express from 'express'
+import { config } from 'dotenv'
+config()
 import { defaultErrorHandler } from './middlewares/error.middlewares'
 import usersRouter from './routes/users.routes'
 import databaseServices from './services/database.services'
+
 databaseServices.connect()
 const app = express()
 const port = 3000
