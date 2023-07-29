@@ -6,6 +6,7 @@ import { signToken } from '~/utils/jwt'
 import { TokenType, UserVerifyStatus } from '~/constants/enums'
 import RefreshToken from '~/models/schemas/RefreshToken.schema'
 import { ObjectId } from 'mongodb'
+import { USER_MESSAGES } from '~/constants/message'
 
 class UsersServices {
   private signAccessToken(user_id: string) {
@@ -90,21 +91,37 @@ class UsersServices {
   async verifyEmail(user_id: string) {
     const [token] = await Promise.all([
       this.signAccessTokenAndRefreshToken(user_id),
-      databaseServices.users.updateOne(
-        { _id: new ObjectId(user_id) },
+      databaseServices.users.updateOne({ _id: new ObjectId(user_id) }, [
         {
           $set: {
             email_verify_token: '',
-            updated_at: new Date(),
+            updated_at: '$$NOW',
             verify: UserVerifyStatus.Verified
           }
         }
-      )
+      ])
     ])
     const [access_token, refresh_token] = token
     return {
       access_token,
       refresh_token
+    }
+  }
+
+  async resendVerifyEmail(user_id: string) {
+    const email_verify_token = await this.signEmailVerifyToken(user_id)
+    // resend mail here to client
+    console.log('new email_verify_token: ', email_verify_token)
+    await databaseServices.users.updateOne({ _id: new ObjectId(user_id) }, [
+      {
+        $set: {
+          email_verify_token,
+          updated_at: '$$NOW'
+        }
+      }
+    ])
+    return {
+      message: USER_MESSAGES.RESEND_EMAIL_VERIFY_SUCCESS
     }
   }
 }

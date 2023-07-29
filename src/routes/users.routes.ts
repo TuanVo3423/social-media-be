@@ -3,7 +3,8 @@ import {
   loginController,
   logoutController,
   registerController,
-  verifyEmailValidator
+  resendVerifyEmailController,
+  verifyEmailController
 } from '~/controllers/users.controller'
 import {
   accessTokenValidator,
@@ -20,7 +21,8 @@ const usersRouter = Router()
 usersRouter.post('/login', loginValidator, wrapRequestHandler(loginController))
 usersRouter.post('/logout', accessTokenValidator, refreshTokenValidator, wrapRequestHandler(logoutController))
 usersRouter.post('/register', registerValidator, wrapRequestHandler(registerController))
-usersRouter.post('/verify-email', emailVerifyTokenValidator, wrapRequestHandler(verifyEmailValidator))
+usersRouter.post('/verify-email', emailVerifyTokenValidator, wrapRequestHandler(verifyEmailController))
+usersRouter.post('/resend-verify-email', accessTokenValidator, wrapRequestHandler(resendVerifyEmailController))
 
 export default usersRouter
 
