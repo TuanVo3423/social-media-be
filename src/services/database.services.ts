@@ -1,6 +1,7 @@
 import { Collection, Db, MongoClient } from 'mongodb'
 import User from '../models/schemas/User.schema'
 import RefreshToken from '~/models/schemas/RefreshToken.schema'
+
 class DatabaseServices {
   private client: MongoClient
   private db: Db

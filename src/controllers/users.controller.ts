@@ -11,8 +11,10 @@ import {
   RegisterReqBody,
   ResetPasswordReqBody,
   TokenPayload,
+  UpdateMeReqBody,
   VerifyEmailReqBody
 } from '~/models/requests/users.requests'
+import User from '~/models/schemas/User.schema'
 import databaseServices from '~/services/database.services'
 import userServices from '~/services/users.services'
 
@@ -30,9 +32,9 @@ export const loginController = async (
   res: Response,
   next: NextFunction
 ) => {
-  const user = req.user
-  const user_id = user?._id as ObjectId
-  const result = await userServices.login(user_id.toString())
+  const { verify, _id: user_id } = req.user as User
+  // const user_id = user?._id as ObjectId
+  const result = await userServices.login({ user_id: (user_id as ObjectId).toString(), verify })
   return res.json({ message: USER_MESSAGES.LOGIN_SUCCESS, result })
 }
 
@@ -43,7 +45,7 @@ export const logoutController = async (req: Request<ParamsDictionary, any, Logou
 }
 
 export const verifyEmailController = async (req: Request<ParamsDictionary, any, VerifyEmailReqBody>, res: Response) => {
-  const { user_id } = req.decoded_email_verify_token as TokenPayload
+  const { user_id, verify } = req.decoded_email_verify_token as TokenPayload
   const user = await databaseServices.users.findOne({ _id: new ObjectId(user_id) })
 
   // neu khong tim ra user
@@ -92,7 +94,7 @@ export const forgotPasswordController = async (
     return res.json({ message: USER_MESSAGES.ALREADY_SEND_FORGOT_PASSWORD_EMAIL })
   }
   // create a new forgot password token
-  const result = await userServices.forgotPassword(user._id.toString())
+  const result = await userServices.forgotPassword({ user_id: user._id.toString(), verify: user.verify })
   return res.json(result)
 }
 
@@ -118,5 +120,14 @@ export const getMeController = async (req: Request, res: Response) => {
   return res.json({
     result: user,
     message: USER_MESSAGES.GET_PROFILE_SUCCESS
+  })
+}
+
+export const updateMeController = async (req: Request<ParamsDictionary, any, UpdateMeReqBody>, res: Response) => {
+  const { user_id } = req.decoded_authorization as TokenPayload
+  const result = await userServices.updateMe(user_id, req.body)
+  return res.json({
+    message: USER_MESSAGES.UPDATE_PROFILE_SUCCESS,
+    result
   })
 }
