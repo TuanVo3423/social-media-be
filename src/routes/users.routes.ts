@@ -1,6 +1,7 @@
 import { Router } from 'express'
 import {
   forgotPasswordController,
+  getMeController,
   loginController,
   logoutController,
   registerController,
@@ -37,6 +38,8 @@ usersRouter.post(
 )
 
 usersRouter.post('/reset-password', resetPasswordValidator, wrapRequestHandler(resetPasswordController))
+
+usersRouter.post('/me', accessTokenValidator, wrapRequestHandler(getMeController))
 
 export default usersRouter
 
