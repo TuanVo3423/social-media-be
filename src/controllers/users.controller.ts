@@ -5,12 +5,14 @@ import { UserVerifyStatus } from '~/constants/enums'
 import { HTTP_STATUS } from '~/constants/httpStatus'
 import { USER_MESSAGES } from '~/constants/message'
 import {
+  ForgotPasswordReqBody,
   LoginReqBody,
   LogoutReqBody,
   RegisterReqBody,
+  ResetPasswordReqBody,
   TokenPayload,
   VerifyEmailReqBody
-} from '~/models/requests/register.requests'
+} from '~/models/requests/users.requests'
 import databaseServices from '~/services/database.services'
 import userServices from '~/services/users.services'
 
@@ -72,5 +74,40 @@ export const resendVerifyEmailController = async (req: Request, res: Response) =
   }
   // goi service o day de tao moi email token
   const result = await userServices.resendVerifyEmail(user_id)
+  return res.json(result)
+}
+
+export const forgotPasswordController = async (
+  req: Request<ParamsDictionary, any, ForgotPasswordReqBody>,
+  res: Response
+) => {
+  const email = req.body.email
+  const user = await databaseServices.users.findOne({ email })
+  if (!user) {
+    return res.status(HTTP_STATUS.NOT_FOUND).json({
+      message: USER_MESSAGES.USER_NOT_FOUND
+    })
+  }
+  if (user.forgot_password_token) {
+    return res.json({ message: USER_MESSAGES.ALREADY_SEND_FORGOT_PASSWORD_EMAIL })
+  }
+  // create a new forgot password token
+  const result = await userServices.forgotPassword(user._id.toString())
+  return res.json(result)
+}
+
+export const verifyForgotPasswordController = async (req: Request, res: Response) => {
+  return res.json({
+    message: USER_MESSAGES.VERIFY_FORGOT_PASSWORD_SUCCESS
+  })
+}
+
+export const resetPasswordController = async (
+  req: Request<ParamsDictionary, any, ResetPasswordReqBody>,
+  res: Response
+) => {
+  const payload = req.body
+  const { user_id } = req.decoded_forgot_password_verify_token as TokenPayload
+  const result = await userServices.resetPassword({ user_id, payload })
   return res.json(result)
 }

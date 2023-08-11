@@ -1,6 +1,6 @@
 import User from '~/models/schemas/User.schema'
 import databaseServices from './database.services'
-import { RegisterReqBody } from '~/models/requests/register.requests'
+import { RegisterReqBody, ResetPasswordReqBody } from '~/models/requests/users.requests'
 import { hashPassword } from '~/utils/crypto'
 import { signToken } from '~/utils/jwt'
 import { TokenType, UserVerifyStatus } from '~/constants/enums'
@@ -44,6 +44,19 @@ class UsersServices {
       privateKey: process.env.JWT_SECRET_EMAIL_VERIFY_TOKEN as string,
       options: {
         expiresIn: process.env.EMAIL_VERIFY_TOKEN_EXPIRES_IN
+      }
+    })
+  }
+
+  private signForgotPasswordToken(user_id: string) {
+    return signToken({
+      payload: {
+        user_id,
+        token_type: TokenType.ForgotPasswordToken
+      },
+      privateKey: process.env.JWT_SECRET_FORGOT_PASSWORD_TOKEN as string,
+      options: {
+        expiresIn: process.env.FORGOT_PASSWORD_TOKEN_EXPIRES_IN
       }
     })
   }
@@ -122,6 +135,38 @@ class UsersServices {
     ])
     return {
       message: USER_MESSAGES.RESEND_EMAIL_VERIFY_SUCCESS
+    }
+  }
+  async forgotPassword(user_id: string) {
+    const forgot_password_token = await this.signForgotPasswordToken(user_id)
+    // send forgot password mail here to client
+    console.log('new forgot_password_token: ', forgot_password_token)
+    await databaseServices.users.updateOne({ _id: new ObjectId(user_id) }, [
+      {
+        $set: {
+          forgot_password_token,
+          updated_at: '$$NOW'
+        }
+      }
+    ])
+    return {
+      message: USER_MESSAGES.SEND_FORGOT_PASSWORD_EMAIL_VERIFY_SUCCESS
+    }
+  }
+
+  async resetPassword({ user_id, payload }: { user_id: string; payload: ResetPasswordReqBody }) {
+    const password = hashPassword(payload.password)
+    await databaseServices.users.updateOne({ _id: new ObjectId(user_id) }, [
+      {
+        $set: {
+          password,
+          forgot_password_token: '',
+          updated_at: '$$NOW'
+        }
+      }
+    ])
+    return {
+      message: USER_MESSAGES.RESET_PASSWORD_SUCCESS
     }
   }
 }
