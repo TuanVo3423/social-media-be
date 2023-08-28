@@ -125,9 +125,10 @@ export const getMeController = async (req: Request, res: Response) => {
 
 export const updateMeController = async (req: Request<ParamsDictionary, any, UpdateMeReqBody>, res: Response) => {
   const { user_id } = req.decoded_authorization as TokenPayload
-  const result = await userServices.updateMe(user_id, req.body)
+  console.log('req.body: ', req.body)
+  // const result = await userServices.updateMe(user_id, req.body)
   return res.json({
-    message: USER_MESSAGES.UPDATE_PROFILE_SUCCESS,
-    result
+    message: USER_MESSAGES.UPDATE_PROFILE_SUCCESS
+    // result
   })
 }
