@@ -45,5 +45,15 @@ export class ErrorWithStatus {
 }
 ```
 
-##### 3.Error in validation area 
-When Throw new Error 
+##### 3.Error in validation area
+
+When Throw new Error
+
+### follower api -> POST, body : followed_user_id : string
+
+### schema
+
+\_id : object_id
+user_id : object_id
+followed_user_id : object_id
+created_at : Date

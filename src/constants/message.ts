@@ -56,5 +56,10 @@ export const USER_MESSAGES = {
   COVER_PHOTO_IS_REQUIRED: 'Cover photo is required',
   COVER_PHOTO_MUST_BE_A_STRING: 'Cover photo must be a string',
   COVER_PHOTO_LENGTH_MUST_BE_FROM_1_TO_200: 'Cover photo length must be from 1 to 200 characters',
-  UPDATE_PROFILE_SUCCESS: 'Profile updated successfully'
+  UPDATE_PROFILE_SUCCESS: 'Profile updated successfully',
+  FOLLOW_PROFILE_SUCCESS: 'Profile updated successfully',
+  FOLLOWED_USER_ID_IS_REQUIRED: 'Follow user_id is required',
+  FOLLOWED_USER_ID_MUST_BE_A_STRING: 'Follow user_id must be a string',
+  FOLLOWED_USER_ID_IS_INVALID: 'Follow user_id is invalid',
+  ALREADY_FOLLOW_USER: 'Already follow user'
 } as const

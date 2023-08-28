@@ -5,6 +5,7 @@ import { UserVerifyStatus } from '~/constants/enums'
 import { HTTP_STATUS } from '~/constants/httpStatus'
 import { USER_MESSAGES } from '~/constants/message'
 import {
+  FollowReqBody,
   ForgotPasswordReqBody,
   LoginReqBody,
   LogoutReqBody,
@@ -125,10 +126,22 @@ export const getMeController = async (req: Request, res: Response) => {
 
 export const updateMeController = async (req: Request<ParamsDictionary, any, UpdateMeReqBody>, res: Response) => {
   const { user_id } = req.decoded_authorization as TokenPayload
-  console.log('req.body: ', req.body)
-  // const result = await userServices.updateMe(user_id, req.body)
+  const result = await userServices.updateMe(user_id, req.body)
   return res.json({
-    message: USER_MESSAGES.UPDATE_PROFILE_SUCCESS
-    // result
+    message: USER_MESSAGES.UPDATE_PROFILE_SUCCESS,
+    result
   })
+}
+
+export const followController = async (req: Request<ParamsDictionary, any, FollowReqBody>, res: Response) => {
+  const { user_id } = req.decoded_authorization as TokenPayload
+  const { followed_user_id } = req.body
+  const is_already_follow = await userServices.checkAlreadyFollow(user_id, followed_user_id)
+  if (is_already_follow) {
+    return res.json({
+      message: USER_MESSAGES.ALREADY_FOLLOW_USER
+    })
+  }
+  const result = await userServices.followers(user_id, followed_user_id)
+  return res.json(result)
 }

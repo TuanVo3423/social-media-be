@@ -7,6 +7,7 @@ import { TokenType, UserVerifyStatus } from '~/constants/enums'
 import RefreshToken from '~/models/schemas/RefreshToken.schema'
 import { ObjectId } from 'mongodb'
 import { USER_MESSAGES } from '~/constants/message'
+import Follower from '~/models/schemas/Follower.schema'
 
 class UsersServices {
   private signAccessToken({ user_id, verify }: { user_id: string; verify: UserVerifyStatus }) {
@@ -216,6 +217,25 @@ class UsersServices {
       }
     )
     return user.value
+  }
+
+  async checkAlreadyFollow(user_id: string, followed_user_id: string) {
+    return await databaseServices.followers.findOne({
+      user_id: new ObjectId(user_id),
+      followed_user_id: new ObjectId(followed_user_id)
+    })
+  }
+  async followers(user_id: string, followed_user_id: string) {
+    await databaseServices.followers.insertOne(
+      new Follower({
+        followed_user_id: new ObjectId(followed_user_id),
+        user_id: new ObjectId(user_id)
+      })
+    )
+
+    return {
+      message: USER_MESSAGES.FOLLOW_PROFILE_SUCCESS
+    }
   }
 }
 

@@ -1,5 +1,6 @@
 import { Router } from 'express'
 import {
+  followController,
   forgotPasswordController,
   getMeController,
   loginController,
@@ -22,7 +23,8 @@ import {
   registerValidator,
   resetPasswordValidator,
   verifiedUserValidator,
-  updateMeValidator
+  updateMeValidator,
+  followValidator
 } from '~/middlewares/users.middlewares'
 import { UpdateMeReqBody } from '~/models/requests/users.requests'
 import { wrapRequestHandler } from '~/utils/handlers'
@@ -61,6 +63,14 @@ usersRouter.patch(
     'cover_photo'
   ]),
   wrapRequestHandler(updateMeController)
+)
+
+usersRouter.post(
+  '/follow',
+  followValidator,
+  accessTokenValidator,
+  verifiedUserValidator,
+  wrapRequestHandler(followController)
 )
 
 export default usersRouter
