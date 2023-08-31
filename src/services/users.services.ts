@@ -195,8 +195,16 @@ class UsersServices {
     return user
   }
 
+  async checkIsUniqueUsername(username: string) {
+    const is_exists_username = await databaseServices.users.findOne({
+      username
+    })
+    return is_exists_username
+  }
+
   async updateMe(user_id: string, payload: UpdateMeReqBody) {
     const _payload = payload.date_of_birth ? { ...payload, date_of_birth: new Date(payload.date_of_birth) } : payload
+
     const user = await databaseServices.users.findOneAndUpdate(
       { _id: new ObjectId(user_id) },
       [
@@ -235,6 +243,45 @@ class UsersServices {
 
     return {
       message: USER_MESSAGES.FOLLOW_PROFILE_SUCCESS
+    }
+  }
+
+  async unFollow(user_id: string, followed_user_id: string) {
+    const follower = await databaseServices.followers.findOne({
+      followed_user_id: new ObjectId(followed_user_id),
+      user_id: new ObjectId(user_id)
+    })
+    if (follower === null) {
+      return {
+        message: USER_MESSAGES.ALREADY_UNFOLLOW_USER
+      }
+    }
+    await databaseServices.followers.deleteOne({
+      followed_user_id: new ObjectId(followed_user_id),
+      user_id: new ObjectId(user_id)
+    })
+
+    return {
+      message: USER_MESSAGES.UNFOLLOW_USER
+    }
+  }
+
+  async changePassword(user_id: string, password: string) {
+    await databaseServices.users.updateOne(
+      {
+        _id: new ObjectId(user_id)
+      },
+      [
+        {
+          $set: {
+            password: hashPassword(password),
+            updated_at: '$$NOW'
+          }
+        }
+      ]
+    )
+    return {
+      message: USER_MESSAGES.CHANGE_PASSWORD_SUCCESS
     }
   }
 }

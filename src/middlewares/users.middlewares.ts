@@ -146,6 +146,36 @@ const forgotPasswordTokenSchema: ParamSchema = {
   }
 }
 
+const userIdSchema: ParamSchema = {
+  trim: true,
+  custom: {
+    options: async (value) => {
+      if (!ObjectId.isValid(value)) {
+        throw new ErrorWithStatus({
+          message: USER_MESSAGES.USER_ID_IS_INVALID,
+          status: HTTP_STATUS.NOT_FOUND
+        })
+      }
+      const user = await databaseServices.users.findOne({
+        _id: new ObjectId(value)
+      })
+      if (user === null) {
+        throw new ErrorWithStatus({
+          message: USER_MESSAGES.USER_NOT_FOUND,
+          status: HTTP_STATUS.NOT_FOUND
+        })
+      }
+      if (user.verify !== 1) {
+        throw new ErrorWithStatus({
+          message: USER_MESSAGES.THIS_USER_IS_NOT_VERIFIED,
+          status: HTTP_STATUS.NOT_FOUND
+        })
+      }
+      return true
+    }
+  }
+}
+
 export const loginValidator = validate(
   checkSchema(
     {
@@ -532,35 +562,49 @@ export const updateMeValidator = validate(
 export const followValidator = validate(
   checkSchema(
     {
-      followed_user_id: {
-        notEmpty: {
-          errorMessage: USER_MESSAGES.FOLLOWED_USER_ID_IS_REQUIRED
-        },
-        isString: {
-          errorMessage: USER_MESSAGES.FOLLOWED_USER_ID_MUST_BE_A_STRING
-        },
-        trim: true,
+      followed_user_id: userIdSchema
+    },
+    ['body']
+  )
+)
+
+export const unfolowController = validate(
+  checkSchema(
+    {
+      user_id: userIdSchema
+    },
+    ['params']
+  )
+)
+
+export const changePasswordValidator = validate(
+  checkSchema(
+    {
+      old_password: {
+        ...passwordSchema,
         custom: {
-          options: async (value) => {
-            if (!ObjectId.isValid(value)) {
-              throw new ErrorWithStatus({
-                message: USER_MESSAGES.FOLLOWED_USER_ID_IS_INVALID,
-                status: HTTP_STATUS.NOT_FOUND
-              })
-            }
+          options: async (value, { req }) => {
+            // check old password co trong trong db chua
+            const { user_id } = (req as Request).decoded_authorization as TokenPayload
             const user = await databaseServices.users.findOne({
-              _id: new ObjectId(value)
+              _id: new ObjectId(user_id)
             })
-            if (user === null) {
+            if (!user) {
               throw new ErrorWithStatus({
                 message: USER_MESSAGES.USER_NOT_FOUND,
                 status: HTTP_STATUS.NOT_FOUND
               })
             }
+            const password_decoded = hashPassword(value)
+            if (password_decoded !== user.password) {
+              throw new Error(USER_MESSAGES.OLD_PASSWORD_DOES_NOT_MATCH)
+            }
             return true
           }
         }
-      }
+      },
+      password: passwordSchema,
+      confirm_password: confirmPasswordSchema
     },
     ['body']
   )

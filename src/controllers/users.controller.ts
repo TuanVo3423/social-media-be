@@ -1,10 +1,12 @@
 import { NextFunction, Request, Response } from 'express'
 import { ParamsDictionary } from 'express-serve-static-core'
 import { ObjectId } from 'mongodb'
+import { TWITTER_USERNAME_REGEX } from '~/constants/common'
 import { UserVerifyStatus } from '~/constants/enums'
 import { HTTP_STATUS } from '~/constants/httpStatus'
 import { USER_MESSAGES } from '~/constants/message'
 import {
+  ChangePasswordReqBody,
   FollowReqBody,
   ForgotPasswordReqBody,
   LoginReqBody,
@@ -126,6 +128,18 @@ export const getMeController = async (req: Request, res: Response) => {
 
 export const updateMeController = async (req: Request<ParamsDictionary, any, UpdateMeReqBody>, res: Response) => {
   const { user_id } = req.decoded_authorization as TokenPayload
+  const is_exists_username = await userServices.checkIsUniqueUsername(req.body.username as string)
+  const is_true_format = TWITTER_USERNAME_REGEX.test(req.body.username as string)
+  if (is_exists_username) {
+    return res.json({
+      message: USER_MESSAGES.USERNAME_ALREADY_EXISTS
+    })
+  }
+  if (!is_true_format) {
+    return res.json({
+      message: USER_MESSAGES.INVALID_USERNAME_FORMAT
+    })
+  }
   const result = await userServices.updateMe(user_id, req.body)
   return res.json({
     message: USER_MESSAGES.UPDATE_PROFILE_SUCCESS,
@@ -143,5 +157,23 @@ export const followController = async (req: Request<ParamsDictionary, any, Follo
     })
   }
   const result = await userServices.followers(user_id, followed_user_id)
+  return res.json(result)
+}
+
+export const unfolowController = async (req: Request<any>, res: Response, next: NextFunction) => {
+  const { user_id } = req.decoded_authorization as TokenPayload
+  const { user_id: followed_user_id } = req.params
+  const result = await userServices.unFollow(user_id, followed_user_id)
+  return res.json(result)
+}
+
+export const changePasswordController = async (
+  req: Request<ParamsDictionary, any, ChangePasswordReqBody>,
+  res: Response,
+  next: NextFunction
+) => {
+  const { user_id } = req.decoded_authorization as TokenPayload
+  const { password } = req.body
+  const result = await userServices.changePassword(user_id, password)
   return res.json(result)
 }
