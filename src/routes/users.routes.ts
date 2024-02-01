@@ -6,6 +6,7 @@ import {
   getMeController,
   loginController,
   logoutController,
+  oauthController,
   registerController,
   resendVerifyEmailController,
   resetPasswordController,
@@ -36,6 +37,7 @@ const usersRouter = Router()
 
 // add middlewares here
 usersRouter.post('/login', loginValidator, wrapRequestHandler(loginController))
+usersRouter.get('/oauth/google', wrapRequestHandler(oauthController))
 usersRouter.post('/logout', accessTokenValidator, refreshTokenValidator, wrapRequestHandler(logoutController))
 usersRouter.post('/register', registerValidator, wrapRequestHandler(registerController))
 usersRouter.post('/verify-email', emailVerifyTokenValidator, wrapRequestHandler(verifyEmailController))

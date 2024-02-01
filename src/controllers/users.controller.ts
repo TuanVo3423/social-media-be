@@ -41,6 +41,14 @@ export const loginController = async (
   return res.json({ message: USER_MESSAGES.LOGIN_SUCCESS, result })
 }
 
+export const oauthController = async (req: Request, res: Response) => {
+  const { code } = req.query
+  const data = await userServices.oauth(code as string)
+  return res.redirect(
+    `${process.env.CLIENT_REDIRECT_CALLBACK}?access_token=${data.access_token}&refresh_token=${data.refresh_token}&verify=${data.verify}`
+  )
+}
+
 export const logoutController = async (req: Request<ParamsDictionary, any, LogoutReqBody>, res: Response) => {
   const { refresh_token } = req.body
   await userServices.logout(refresh_token)
