@@ -37,7 +37,7 @@ class MediasServices {
     const result: Media[] = files.map((file) => {
       const url = isProduction
         ? `${process.env.HOST}/static/video/${file.newFilename}`
-        : `http://localhost:${process.env.PORT}/static/video/${file.newFilename}`
+        : `http://localhost:${process.env.PORT}/static/video-stream/${file.newFilename}`
 
       return {
         url,
