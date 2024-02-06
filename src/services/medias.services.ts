@@ -1,23 +1,34 @@
 import { Request } from 'express'
+import fs from 'fs'
 import path from 'path'
 import sharp from 'sharp'
-import { UPLOAD_FOLDER } from '~/constants/dir'
-import { getNameFromFilePath, handleUploadSingleImage } from '~/utils/file'
-import fs from 'fs'
 import { isProduction } from '~/constants/deloyment'
+import { UPLOAD_FOLDER } from '~/constants/dir'
+import { MediaType } from '~/constants/enums'
+import { Media } from '~/models/Others'
+import { getNameFromFilePath, handleUploadImage } from '~/utils/file'
 class MediasServices {
-  async upLoadSingleImage(req: Request) {
-    const { filepath, newFilename, originalFilename } = await handleUploadSingleImage(req)
+  async upLoadImage(req: Request) {
+    // upload image into temp folder
+    const files = await handleUploadImage(req)
     // convert to jpeg
-    const newName = getNameFromFilePath(newFilename)
-    const newPath = path.resolve(UPLOAD_FOLDER, `${newName}.jpeg`)
-    await sharp(filepath).jpeg().toFile(newPath)
-    // delete temp file
-    fs.unlinkSync(filepath)
-    const url = isProduction
-      ? `${process.env.HOST}/static/image/${newName}.jpeg`
-      : `http://localhost:${process.env.PORT}/static/image/${newName}.jpeg`
-    return url
+    const result: Media[] = await Promise.all(
+      files.map(async (file) => {
+        const newName = getNameFromFilePath(file.newFilename)
+        const newPath = path.resolve(UPLOAD_FOLDER, `${newName}.jpeg`)
+        await sharp(file.filepath).jpeg().toFile(newPath)
+        // delete temp file
+        fs.unlinkSync(file.filepath)
+        const url = isProduction
+          ? `${process.env.HOST}/static/image/${newName}.jpeg`
+          : `http://localhost:${process.env.PORT}/static/image/${newName}.jpeg`
+        return {
+          url,
+          type: MediaType.Image
+        }
+      })
+    )
+    return result
   }
 }
 
