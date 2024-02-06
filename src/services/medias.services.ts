@@ -15,8 +15,8 @@ class MediasServices {
     // delete temp file
     fs.unlinkSync(filepath)
     const url = isProduction
-      ? `${process.env.HOST}/medias/${newName}.jpeg`
-      : `http://localhost:${process.env.PORT}/medias/${newName}.jpeg`
+      ? `${process.env.HOST}/static/image/${newName}.jpeg`
+      : `http://localhost:${process.env.PORT}/static/image/${newName}.jpeg`
     return url
   }
 }

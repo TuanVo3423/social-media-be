@@ -6,6 +6,7 @@ import usersRouter from './routes/users.routes'
 import databaseServices from './services/database.services'
 import mediasRouter from './routes/medias.routes'
 import { initFolder } from './utils/file'
+import staticRouter from './routes/static.routes'
 
 databaseServices.connect()
 const app = express()
@@ -16,6 +17,7 @@ initFolder()
 app.use(express.json())
 app.use('/users', usersRouter)
 app.use('/medias', mediasRouter)
+app.use('/static', staticRouter)
 app.use(defaultErrorHandler)
 
 app.listen(port, () => {
