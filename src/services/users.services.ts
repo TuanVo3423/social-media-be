@@ -11,6 +11,7 @@ import Follower from '~/models/schemas/Follower.schema'
 import axios from 'axios'
 import { ErrorWithStatus } from '~/models/Errors'
 import { HTTP_STATUS } from '~/constants/httpStatus'
+import { getNameFromEmail } from '~/utils/common'
 
 class UsersServices {
   private signAccessToken({ user_id, verify }: { user_id: string; verify: UserVerifyStatus }) {
@@ -84,7 +85,8 @@ class UsersServices {
         _id: user_id,
         email_verify_token,
         date_of_birth: new Date(payload.date_of_birth),
-        password: hashPassword(payload.password)
+        password: hashPassword(payload.password),
+        username: getNameFromEmail(payload.email)
       })
     )
     const [access_token, refresh_token] = await this.signAccessTokenAndRefreshToken({
