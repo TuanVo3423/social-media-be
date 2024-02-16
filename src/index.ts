@@ -8,7 +8,7 @@ import mediasRouter from './routes/medias.routes'
 import { initFolder } from './utils/file'
 import staticRouter from './routes/static.routes'
 
-databaseServices.connect()
+databaseServices.connect().then(() => databaseServices.indexUsers())
 const app = express()
 const port = process.env.PORT || 3000
 
