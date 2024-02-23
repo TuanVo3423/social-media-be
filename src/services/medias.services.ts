@@ -6,7 +6,7 @@ import { isProduction } from '~/constants/deloyment'
 import { UPLOAD_IMAGE_FOLDER } from '~/constants/dir'
 import { MediaType } from '~/constants/enums'
 import { Media } from '~/models/Others'
-import { getExtentionFromFilePath, getNameFromFilePath, handleUploadImage, handleUploadVideo } from '~/utils/file'
+import { getNameFromFilePath, handleUploadImage, handleUploadVideo } from '~/utils/file'
 class MediasServices {
   async upLoadImage(req: Request) {
     // upload image into temp folder
