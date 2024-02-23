@@ -7,6 +7,7 @@ import databaseServices from './services/database.services'
 import mediasRouter from './routes/medias.routes'
 import { initFolder } from './utils/file'
 import staticRouter from './routes/static.routes'
+import tweetsRouter from './routes/tweets.routes'
 
 databaseServices.connect().then(() => {
   databaseServices.indexUsers()
@@ -21,6 +22,7 @@ initFolder()
 app.use(express.json())
 app.use('/users', usersRouter)
 app.use('/medias', mediasRouter)
+app.use('/tweets', tweetsRouter)
 app.use('/static', staticRouter)
 app.use(defaultErrorHandler)
 
