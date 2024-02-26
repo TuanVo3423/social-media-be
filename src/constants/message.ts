@@ -90,3 +90,13 @@ export const TWEET_MESSAGES = {
   MEDIAS_MUST_BE_ARRAY_OF_MEDIA_OBJECT: 'Medias must be array of media object',
   CREATE_SUCCESS: 'Create tweet success'
 } as const
+
+export const BOOKMARK_MESSAGES = {
+  BOOKMARK_SUCCESS: 'Bookmark success',
+  UNBOOKMARK_SUCCESS: 'Unbookmark success'
+}
+
+export const LIKE_MESSAGES = {
+  LIKE_MESSAGES: 'Like success',
+  UNLIKE_MESSAGES: 'Unlike success'
+}
