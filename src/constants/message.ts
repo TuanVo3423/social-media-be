@@ -72,7 +72,9 @@ export const USER_MESSAGES = {
   CHANGE_PASSWORD_SUCCESS: 'Change password successfully',
   GMAIL_NOT_VERIFIED: 'Gmail not verified',
   UPLOAD_SUCCESS: 'Upload successfully',
-  REFRESH_TOKEN_SUCCESS: 'Refresh token successfully'
+  REFRESH_TOKEN_SUCCESS: 'Refresh token successfully',
+  ACCESS_TOKEN_IS_INVALID: 'Access token is invalid',
+  AUTHOR_IS_BANNED: 'Author is banned'
 } as const
 
 export const TWEET_MESSAGES = {
@@ -89,7 +91,9 @@ export const TWEET_MESSAGES = {
   MENTIONS_MUST_BE_ARRAY_OF_USER_ID: 'Mentions must be array of user id',
   MEDIAS_MUST_BE_ARRAY_OF_MEDIA_OBJECT: 'Medias must be array of media object',
   CREATE_SUCCESS: 'Create tweet success',
-  INVALID_TWEET_ID: 'Invalid tweet id'
+  INVALID_TWEET_ID: 'Invalid tweet id',
+  GET_TWEET_SUCCESS: 'Get tweet success',
+  TWEET_IS_NOT_PUBLIC: 'Tweet is not public'
 } as const
 
 export const BOOKMARK_MESSAGES = {

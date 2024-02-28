@@ -2,7 +2,7 @@ import { TweetRequestBody } from '~/models/requests/tweets.requests'
 import databaseServices from './database.services'
 import Tweet from '~/models/schemas/Tweet.schema'
 import Hashtag from '~/models/schemas/Hashtag.schema'
-import { WithId } from 'mongodb'
+import { ObjectId, WithId } from 'mongodb'
 
 class TweetsServices {
   async checkAndCreateHashTags(hashtags: string[]) {
@@ -40,6 +40,11 @@ class TweetsServices {
         user_id
       })
     )
+    return result
+  }
+
+  async getTweet(tweet_id: string) {
+    const result = await databaseServices.tweets.findOne({ _id: new ObjectId(tweet_id) })
     return result
   }
 }
