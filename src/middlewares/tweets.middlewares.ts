@@ -18,94 +18,100 @@ const mediaTypes = getArrayFromEnum(MediaType)
 const tweetAudienceTypes = getArrayFromEnum(TweetAudience)
 
 export const createTweetValidator = validate(
-  checkSchema({
-    type: {
-      isIn: {
-        options: [tweetTypes],
-        errorMessage: TWEET_MESSAGES.INVALID_TWEET_TYPE
-      }
-    },
-    audience: {
-      isIn: {
-        options: [tweetAudienceTypes],
-        errorMessage: TWEET_MESSAGES.INVALID_TWEET_AUDIENCE
-      }
-    },
-    parent_id: {
-      // neu ma retweet, comment, quote thi parent_id phai la objectid
-      custom: {
-        options: async (value, { req }) => {
-          const type = req.body.type as TweetType
-          if ([TweetType.Retweet, TweetType.Comment, TweetType.QuoteTweet].includes(type) && !ObjectId.isValid(value)) {
-            throw new Error(TWEET_MESSAGES.PARENT_ID_MUST_BE_TWEET_ID)
-          }
+  checkSchema(
+    {
+      type: {
+        isIn: {
+          options: [tweetTypes],
+          errorMessage: TWEET_MESSAGES.INVALID_TWEET_TYPE
+        }
+      },
+      audience: {
+        isIn: {
+          options: [tweetAudienceTypes],
+          errorMessage: TWEET_MESSAGES.INVALID_TWEET_AUDIENCE
+        }
+      },
+      parent_id: {
+        // neu ma retweet, comment, quote thi parent_id phai la objectid
+        custom: {
+          options: async (value, { req }) => {
+            const type = req.body.type as TweetType
+            if (
+              [TweetType.Retweet, TweetType.Comment, TweetType.QuoteTweet].includes(type) &&
+              !ObjectId.isValid(value)
+            ) {
+              throw new Error(TWEET_MESSAGES.PARENT_ID_MUST_BE_TWEET_ID)
+            }
 
-          if ([TweetType.Tweet].includes(type) && value !== null) {
-            throw new Error(TWEET_MESSAGES.PARENT_ID_MUST_BE_NULL)
+            if ([TweetType.Tweet].includes(type) && value !== null) {
+              throw new Error(TWEET_MESSAGES.PARENT_ID_MUST_BE_NULL)
+            }
+            return true
           }
-          return true
         }
-      }
-    },
-    content: {
-      isString: true,
-      custom: {
-        options: async (value, { req }) => {
-          const type = req.body.type as TweetType
-          const metions = req.body.mentions as string[]
-          const hashtags = req.body.hashtags as string[]
+      },
+      content: {
+        isString: true,
+        custom: {
+          options: async (value, { req }) => {
+            const type = req.body.type as TweetType
+            const metions = req.body.mentions as string[]
+            const hashtags = req.body.hashtags as string[]
 
-          if ([TweetType.Retweet].includes(type) && value !== null) {
-            throw new Error(TWEET_MESSAGES.CONTENT_MUST_BE_NULL)
-          }
+            if ([TweetType.Retweet].includes(type) && (value !== '' || null)) {
+              throw new Error(TWEET_MESSAGES.CONTENT_MUST_BE_NULL)
+            }
 
-          if (
-            [TweetType.Tweet, TweetType.Comment, TweetType.QuoteTweet].includes(type) &&
-            value === null &&
-            isEmpty(metions) &&
-            isEmpty(hashtags)
-          ) {
-            throw new Error(TWEET_MESSAGES.CONTENT_MUST_BE_NON_EMPTY_STRING)
+            if (
+              [TweetType.Tweet, TweetType.Comment, TweetType.QuoteTweet].includes(type) &&
+              value === null &&
+              isEmpty(metions) &&
+              isEmpty(hashtags)
+            ) {
+              throw new Error(TWEET_MESSAGES.CONTENT_MUST_BE_NON_EMPTY_STRING)
+            }
+            return true
           }
-          return true
+        }
+      },
+      hashtags: {
+        isArray: true,
+        custom: {
+          options: (value) => {
+            if (value.some((item: any) => typeof item !== 'string')) {
+              throw new Error(TWEET_MESSAGES.HASHTAGS_MUST_BE_ARRAY_OF_STRING)
+            }
+            return true
+          }
+        }
+      },
+      mentions: {
+        isArray: true,
+        custom: {
+          options: async (value) => {
+            if (value.some((item: any) => !ObjectId.isValid(item))) {
+              throw new Error(TWEET_MESSAGES.MENTIONS_MUST_BE_ARRAY_OF_USER_ID)
+            }
+            return true
+          }
+        }
+      },
+      // mang object thang media
+      medias: {
+        isArray: true,
+        custom: {
+          options: (value) => {
+            if (value.some((item: any) => typeof item.url !== 'string' || !mediaTypes.includes(item.type))) {
+              throw new Error(TWEET_MESSAGES.MEDIAS_MUST_BE_ARRAY_OF_MEDIA_OBJECT)
+            }
+            return true
+          }
         }
       }
     },
-    hashtags: {
-      isArray: true,
-      custom: {
-        options: (value) => {
-          if (value.some((item: any) => typeof item !== 'string')) {
-            throw new Error(TWEET_MESSAGES.HASHTAGS_MUST_BE_ARRAY_OF_STRING)
-          }
-          return true
-        }
-      }
-    },
-    mentions: {
-      isArray: true,
-      custom: {
-        options: async (value) => {
-          if (value.some((item: any) => !ObjectId.isValid(item))) {
-            throw new Error(TWEET_MESSAGES.MENTIONS_MUST_BE_ARRAY_OF_USER_ID)
-          }
-          return true
-        }
-      }
-    },
-    // mang object thang media
-    medias: {
-      isArray: true,
-      custom: {
-        options: (value) => {
-          if (value.some((item: any) => typeof item.url !== 'string' || !mediaTypes.includes(item.type))) {
-            throw new Error(TWEET_MESSAGES.MEDIAS_MUST_BE_ARRAY_OF_MEDIA_OBJECT)
-          }
-          return true
-        }
-      }
-    }
-  })
+    ['body']
+  )
 )
 
 export const tweetIdValidator = validate(
@@ -120,7 +126,114 @@ export const tweetIdValidator = validate(
                 status: HTTP_STATUS.BAD_REQUEST
               })
             }
-            const tweet = await databaseServices.tweets.findOne({ _id: new ObjectId(value) })
+            const [tweet] = await databaseServices.tweets
+              .aggregate<Tweet>([
+                {
+                  $match: {
+                    _id: new ObjectId(value)
+                  }
+                },
+                {
+                  $lookup: {
+                    from: 'hashtags',
+                    localField: 'hashtags',
+                    foreignField: '_id',
+                    as: 'hashtags'
+                  }
+                },
+                {
+                  $lookup: {
+                    from: 'users',
+                    localField: 'mentions',
+                    foreignField: '_id',
+                    as: 'mentions'
+                  }
+                },
+                {
+                  $addFields: {
+                    mentions: {
+                      $map: {
+                        input: '$mentions',
+                        as: 'mention',
+                        in: {
+                          _id: '$$mention._id',
+                          name: '$$mention.name',
+                          username: '$$mention.username',
+                          email: '$$mention.email'
+                        }
+                      }
+                    }
+                  }
+                },
+                {
+                  $lookup: {
+                    from: 'likes',
+                    localField: 'tweet_id',
+                    foreignField: '_id',
+                    as: 'likes'
+                  }
+                },
+                {
+                  $lookup: {
+                    from: 'bookmarks',
+                    localField: 'tweet_id',
+                    foreignField: '_id',
+                    as: 'bookmarks'
+                  }
+                },
+                {
+                  $lookup: {
+                    from: 'tweets',
+                    localField: '_id',
+                    foreignField: 'parent_id',
+                    as: 'tweet_children'
+                  }
+                },
+                {
+                  $addFields: {
+                    likes: {
+                      $size: '$likes'
+                    },
+                    bookmarks: {
+                      $size: '$bookmarks'
+                    },
+                    retweet_count: {
+                      $size: {
+                        $filter: {
+                          input: '$tweet_children',
+                          as: 'item',
+                          cond: {
+                            $eq: ['$$item.type', 1]
+                          }
+                        }
+                      }
+                    },
+                    comment_count: {
+                      $size: {
+                        $filter: {
+                          input: '$tweet_children',
+                          as: 'item',
+                          cond: {
+                            $eq: ['$$item.type', 2]
+                          }
+                        }
+                      }
+                    },
+                    quote_count: {
+                      $size: {
+                        $filter: {
+                          input: '$tweet_children',
+                          as: 'item',
+                          cond: {
+                            $eq: ['$$item.type', 3]
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              ])
+              .toArray()
             if (!tweet) {
               throw new ErrorWithStatus({
                 message: TWEET_MESSAGES.INVALID_TWEET_ID,
