@@ -16,13 +16,14 @@ export const getTweetDetailController = async (req: Request, res: Response, next
   const tweet = req.tweet as Tweet
   const tweet_id = req.params.tweet_id
   const { user_id } = req.decoded_authorization as TokenPayload
-  const { guest_views, user_views } = await tweetsServices.increaseView({ tweet_id, user_id })
+  const { guest_views, user_views, updated_at } = await tweetsServices.increaseView({ tweet_id, user_id })
   return res.json({
     message: TWEET_MESSAGES.GET_TWEET_SUCCESS,
     result: {
       ...tweet,
       user_views,
-      guest_views
+      guest_views,
+      updated_at
     }
   })
 }
@@ -33,8 +34,9 @@ export const getTweetChildrenController = async (req: Request, res: Response, ne
   const page = Number(req.query.page as string)
   const limit = Number(req.query.limit as string)
   const tweet_type = Number(req.query.type as string) as TweetType
+  const { user_id } = req.decoded_authorization as TokenPayload
   // tweet service => call aggregate and call get total documents
-  const { total_page, tweet } = await tweetsServices.getTweetChildren({ tweet_id, page, limit, tweet_type })
+  const { total_page, tweet } = await tweetsServices.getTweetChildren({ tweet_id, page, limit, tweet_type, user_id })
   return res.json({
     message: TWEET_MESSAGES.GET_TWEET_CHILDREN_SUCCESS,
     result: {
