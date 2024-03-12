@@ -58,7 +58,8 @@ user_id : object_id
 followed_user_id : object_id
 created_at : Date
 
-### change password 
+### change password
+
 old_password
 new_password
 confirm_password

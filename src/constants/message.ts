@@ -94,7 +94,8 @@ export const TWEET_MESSAGES = {
   INVALID_TWEET_ID: 'Invalid tweet id',
   GET_TWEET_SUCCESS: 'Get tweet success',
   TWEET_IS_NOT_PUBLIC: 'Tweet is not public',
-  GET_TWEET_CHILDREN_SUCCESS: 'Get tweet children success'
+  GET_TWEET_CHILDREN_SUCCESS: 'Get tweet children success',
+  INVALID_LIMIT: 'Invalid limit'
 } as const
 
 export const BOOKMARK_MESSAGES = {
