@@ -57,7 +57,8 @@ const insertMultipleUsers = async (users: RegisterReqBody[]) => {
           username: `user${user_id.toString()}`,
           password: hashPassword(user.password),
           date_of_birth: new Date(user.date_of_birth),
-          verify: UserVerifyStatus.Verified
+          verify: UserVerifyStatus.Verified,
+          _id: user_id
         })
       )
       return user_id
