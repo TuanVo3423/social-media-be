@@ -273,7 +273,8 @@ export const audienceValidator = wrapRequestHandler(async (req: Request, res: Re
 
     // check xem user co trong twitter circle cua tweet khong va co phai la tac gia hay khong
     const { user_id } = req.decoded_authorization as TokenPayload
-    const isInTwitterCircle = tweet.twitter_circle.some((item) => item.equals(user_id))
+
+    const isInTwitterCircle = author.twitter_circle.some((item) => item.equals(user_id))
     if (!isInTwitterCircle && !tweet.user_id.equals(user_id)) {
       throw new ErrorWithStatus({
         message: TWEET_MESSAGES.TWEET_IS_NOT_PUBLIC,
@@ -293,7 +294,15 @@ export const getTweetChildrenValidator = validate(
           options: [tweetTypes],
           errorMessage: TWEET_MESSAGES.INVALID_TWEET_TYPE
         }
-      },
+      }
+    },
+    ['query']
+  )
+)
+
+export const paginationValidator = validate(
+  checkSchema(
+    {
       limit: {
         isNumeric: true,
         custom: {

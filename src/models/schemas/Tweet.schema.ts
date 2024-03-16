@@ -7,7 +7,6 @@ interface ITweet {
   user_id: string
   type: TweetType
   audience: TweetAudience
-  twitter_circle?: ObjectId[]
   content: string
   parent_id: null | string //  chỉ null khi tweet gốc
   hashtags: ObjectId[]
@@ -24,7 +23,7 @@ export default class Tweet {
   user_id: ObjectId
   type: TweetType
   audience: TweetAudience
-  twitter_circle: ObjectId[]
+
   content: string
   parent_id: null | ObjectId //  chỉ null khi tweet gốc
   hashtags: ObjectId[]
@@ -40,7 +39,6 @@ export default class Tweet {
     this.user_id = new ObjectId(tweet.user_id)
     this.type = tweet.type
     this.audience = tweet.audience
-    this.twitter_circle = tweet.twitter_circle || []
     this.content = tweet.content
     this.parent_id = tweet.parent_id ? new ObjectId(tweet.parent_id) : null
     this.hashtags = tweet.hashtags
