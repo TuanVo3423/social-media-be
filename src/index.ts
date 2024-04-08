@@ -10,12 +10,15 @@ import staticRouter from './routes/static.routes'
 import tweetsRouter from './routes/tweets.routes'
 import bookmarksRouter from './routes/bookmarks.routes'
 import likesRouter from './routes/likes.routes'
+import searchRouter from './routes/search.routes'
 // import '~/utils/fake'
 
 databaseServices.connect().then(() => {
   databaseServices.indexUsers()
   databaseServices.indexRefreshTokens()
   databaseServices.indexFollowers()
+  databaseServices.indexHashtags()
+  databaseServices.indexTweets()
 })
 const app = express()
 const port = process.env.PORT || 3000
@@ -28,6 +31,7 @@ app.use('/medias', mediasRouter)
 app.use('/tweets', tweetsRouter)
 app.use('/bookmarks', bookmarksRouter)
 app.use('/likes', likesRouter)
+app.use('/search', searchRouter)
 app.use('/static', staticRouter)
 app.use(defaultErrorHandler)
 
