@@ -9,13 +9,15 @@ class SearchServices {
     limit,
     page,
     user_id,
-    media_type
+    media_type,
+    people_follow
   }: {
     limit: number
     page: number
     content: string
     user_id: string
-    media_type: MediaTypeQuery
+    media_type?: MediaTypeQuery
+    people_follow?: string
   }) {
     const user_id_object = new ObjectId(user_id)
     const date = new Date()
@@ -28,6 +30,26 @@ class SearchServices {
       } else {
         $match['medias.type'] = MediaType.Video
       }
+    }
+
+    if (people_follow === '1') {
+      const followed_user_ids = await databaseServices.followers
+        .find(
+          {
+            user_id: user_id_object
+          },
+          {
+            projection: {
+              followed_user_id: 1,
+              _id: 0
+            }
+          }
+        )
+        .toArray()
+      const ids = followed_user_ids.map((item) => item.followed_user_id)
+      ids.push(user_id_object)
+
+      $match['user_id'] = { $in: ids }
     }
 
     const [tweets, total] = await Promise.all([

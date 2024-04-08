@@ -13,13 +13,15 @@ export const searchController = async (
   const _limit = Number(req.query.limit)
   const _content = req.query.content as string
   const media_type = req.query.media_type
+  const people_follow = req.query.people_follow
   const { user_id } = req.decoded_authorization as TokenPayload
   const result = await searchServices.advancedSearch({
     content: _content,
     limit: _limit,
     page: _page,
     user_id,
-    media_type
+    media_type,
+    people_follow
   })
   return res.json({
     message: 'Search successfully',
