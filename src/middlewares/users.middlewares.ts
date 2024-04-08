@@ -568,7 +568,7 @@ export const followValidator = validate(
   )
 )
 
-export const unfolowController = validate(
+export const unFollowValidator = validate(
   checkSchema(
     {
       user_id: userIdSchema

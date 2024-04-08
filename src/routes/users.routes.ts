@@ -19,17 +19,18 @@ import {
 import { FilterValidator } from '~/middlewares/common.middlewares'
 import {
   accessTokenValidator,
+  changePasswordValidator,
   emailVerifyTokenValidator,
+  followValidator,
   forgotPasswordValidator,
-  verifyForgotPasswordTokenValidator,
   loginValidator,
   refreshTokenValidator,
   registerValidator,
   resetPasswordValidator,
-  verifiedUserValidator,
+  unFollowValidator,
   updateMeValidator,
-  followValidator,
-  changePasswordValidator
+  verifiedUserValidator,
+  verifyForgotPasswordTokenValidator
 } from '~/middlewares/users.middlewares'
 import { UpdateMeReqBody } from '~/models/requests/users.requests'
 import { wrapRequestHandler } from '~/utils/handlers'
@@ -82,7 +83,7 @@ usersRouter.post(
 
 usersRouter.delete(
   '/follow/:user_id',
-  followValidator,
+  unFollowValidator,
   accessTokenValidator,
   verifiedUserValidator,
   wrapRequestHandler(unfolowController)
