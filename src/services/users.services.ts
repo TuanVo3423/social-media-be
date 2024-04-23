@@ -12,6 +12,7 @@ import axios from 'axios'
 import { ErrorWithStatus } from '~/models/Errors'
 import { HTTP_STATUS } from '~/constants/httpStatus'
 import { getNameFromEmail } from '~/utils/common'
+import { sendVerifyEmail } from '~/utils/aws'
 
 class UsersServices {
   private signAccessToken({ user_id, verify }: { user_id: string; verify: UserVerifyStatus }) {
@@ -113,6 +114,16 @@ class UsersServices {
     const { exp, iat } = await this.decodeRefreshToken(refresh_token)
     await databaseServices.refreshToken.insertOne(
       new RefreshToken({ user_id: new ObjectId(user_id), token: refresh_token, iat, exp })
+    )
+    // send mail here to client
+    await sendVerifyEmail(
+      payload.email,
+      'Verify your email',
+      `
+    <h1>Verify your email</h1>
+    <p>Click the link below to verify your email</p>
+    <a href="${process.env.CLIENT_URL}/verify-email?email_verify_token=${email_verify_token}">Verify email</a>
+    `
     )
     console.log('email_verify_token: ', email_verify_token)
     return { access_token, refresh_token }
