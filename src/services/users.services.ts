@@ -1,18 +1,18 @@
-import User from '~/models/schemas/User.schema'
-import databaseServices from './database.services'
+import axios from 'axios'
+import { ObjectId } from 'mongodb'
+import { TokenType, UserVerifyStatus } from '~/constants/enums'
+import { HTTP_STATUS } from '~/constants/httpStatus'
+import { USER_MESSAGES } from '~/constants/message'
+import { ErrorWithStatus } from '~/models/Errors'
 import { RegisterReqBody, ResetPasswordReqBody, UpdateMeReqBody } from '~/models/requests/users.requests'
+import Follower from '~/models/schemas/Follower.schema'
+import RefreshToken from '~/models/schemas/RefreshToken.schema'
+import User from '~/models/schemas/User.schema'
+import { sendForgotPasswordEmail, sendRegisterEmail } from '~/utils/aws'
+import { getNameFromEmail } from '~/utils/common'
 import { hashPassword } from '~/utils/crypto'
 import { signToken, verifyToken } from '~/utils/jwt'
-import { TokenType, UserVerifyStatus } from '~/constants/enums'
-import RefreshToken from '~/models/schemas/RefreshToken.schema'
-import { ObjectId } from 'mongodb'
-import { USER_MESSAGES } from '~/constants/message'
-import Follower from '~/models/schemas/Follower.schema'
-import axios from 'axios'
-import { ErrorWithStatus } from '~/models/Errors'
-import { HTTP_STATUS } from '~/constants/httpStatus'
-import { getNameFromEmail } from '~/utils/common'
-import { sendVerifyEmail } from '~/utils/aws'
+import databaseServices from './database.services'
 
 class UsersServices {
   private signAccessToken({ user_id, verify }: { user_id: string; verify: UserVerifyStatus }) {
@@ -116,15 +116,7 @@ class UsersServices {
       new RefreshToken({ user_id: new ObjectId(user_id), token: refresh_token, iat, exp })
     )
     // send mail here to client
-    await sendVerifyEmail(
-      payload.email,
-      'Verify your email',
-      `
-    <h1>Verify your email</h1>
-    <p>Click the link below to verify your email</p>
-    <a href="${process.env.CLIENT_URL}/verify-email?email_verify_token=${email_verify_token}">Verify email</a>
-    `
-    )
+    await sendRegisterEmail(payload.email, email_verify_token)
     console.log('email_verify_token: ', email_verify_token)
     return { access_token, refresh_token }
   }
@@ -296,9 +288,11 @@ class UsersServices {
     }
   }
 
-  async resendVerifyEmail(user_id: string) {
+  async resendVerifyEmail(user_id: string, email: string) {
     const email_verify_token = await this.signEmailVerifyToken({ user_id, verify: UserVerifyStatus.Unverified })
     // resend mail here to client
+    // send mail here to client
+    await sendRegisterEmail(email, email_verify_token)
     console.log('new email_verify_token: ', email_verify_token)
     await databaseServices.users.updateOne({ _id: new ObjectId(user_id) }, [
       {
@@ -312,9 +306,10 @@ class UsersServices {
       message: USER_MESSAGES.RESEND_EMAIL_VERIFY_SUCCESS
     }
   }
-  async forgotPassword({ user_id, verify }: { user_id: string; verify: UserVerifyStatus }) {
+  async forgotPassword({ user_id, verify, email }: { user_id: string; verify: UserVerifyStatus; email: string }) {
     const forgot_password_token = await this.signForgotPasswordToken({ user_id, verify })
     // send forgot password mail here to client
+    await sendForgotPasswordEmail(email, forgot_password_token)
     console.log('new forgot_password_token: ', forgot_password_token)
     await databaseServices.users.updateOne({ _id: new ObjectId(user_id) }, [
       {

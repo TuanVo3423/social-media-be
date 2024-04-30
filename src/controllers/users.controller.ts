@@ -100,7 +100,7 @@ export const resendVerifyEmailController = async (req: Request, res: Response) =
     return res.json({ message: USER_MESSAGES.EMAIL_ALREADY_VERIFIED_BEFORE })
   }
   // goi service o day de tao moi email token
-  const result = await userServices.resendVerifyEmail(user_id)
+  const result = await userServices.resendVerifyEmail(user_id, user.email)
   return res.json(result)
 }
 
@@ -119,7 +119,11 @@ export const forgotPasswordController = async (
     return res.json({ message: USER_MESSAGES.ALREADY_SEND_FORGOT_PASSWORD_EMAIL })
   }
   // create a new forgot password token
-  const result = await userServices.forgotPassword({ user_id: user._id.toString(), verify: user.verify })
+  const result = await userServices.forgotPassword({
+    user_id: user._id.toString(),
+    verify: user.verify,
+    email: user.email
+  })
   return res.json(result)
 }
 
