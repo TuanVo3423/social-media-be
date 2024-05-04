@@ -18,22 +18,36 @@ s3.listBuckets({})
     console.error(error)
   })
 
-const file = fs.readFileSync(path.resolve('uploads/images/panda.jpg'))
+// const file = fs.readFileSync(path.resolve('uploads/images/panda.jpg'))
 
-const parallelUploads3 = new Upload({
-  client: s3 || new S3Client({}),
-  params: { Bucket: process.env.AWS_S3_BUCKET_NAME as string, Key: 'anh1.jpg', Body: file, ContentType: 'image/jpeg' },
+export const handleUploadToS3 = async ({
+  fileName,
+  filePath,
+  contentType
+}: {
+  fileName: string
+  filePath: string
+  contentType: string
+}) => {
+  const parallelUploads3 = new Upload({
+    client: s3 || new S3Client({}),
+    params: {
+      Bucket: process.env.AWS_S3_BUCKET_NAME as string,
+      Key: fileName,
+      Body: fs.readFileSync(path.resolve(filePath)),
+      ContentType: contentType
+    },
 
-  tags: [
-    /*...*/
-  ], // optional tags
-  queueSize: 4, // optional concurrency configuration
-  partSize: 1024 * 1024 * 5, // optional size of each part, in bytes, at least 5MB
-  leavePartsOnError: false // optional manually handle dropped parts
-})
+    tags: [
+      /*...*/
+    ], // optional tags
+    queueSize: 4, // optional concurrency configuration
+    partSize: 1024 * 1024 * 5, // optional size of each part, in bytes, at least 5MB
+    leavePartsOnError: false // optional manually handle dropped parts
+  })
+  return parallelUploads3.done()
+}
 
-parallelUploads3.on('httpUploadProgress', (progress) => {
-  console.log(progress)
-})
-
-parallelUploads3.done().then((res) => console.log(res))
+// parallelUploads3.on('httpUploadProgress', (progress) => {
+//   console.log(progress)
+// })
