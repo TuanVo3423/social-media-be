@@ -6,6 +6,7 @@ import Tweet from '~/models/schemas/Tweet.schema'
 import Bookmark from '~/models/schemas/Bookmark.schema'
 import Like from '~/models/schemas/Like.schema'
 import Hashtag from '~/models/schemas/Hashtag.schema'
+import Conversation from '~/models/schemas/Conversation.schema'
 
 class DatabaseServices {
   private client: MongoClient
@@ -89,6 +90,9 @@ class DatabaseServices {
 
   get likes(): Collection<Like> {
     return this.db.collection(process.env.DB_LIKES_COLLECTION as string)
+  }
+  get conversations(): Collection<Conversation> {
+    return this.db.collection(process.env.DB_CONVERSATIONS_COLLECTION as string)
   }
 }
 

@@ -108,3 +108,7 @@ export const LIKE_MESSAGES = {
   LIKE_MESSAGES: 'Like success',
   UNLIKE_MESSAGES: 'Unlike success'
 }
+
+export const CONVERSATION_MESSAGES = {
+  GET_CONVERSATIONS: 'Get Conversations Success'
+}
