@@ -1,0 +1,785 @@
+openapi: 3.0.3
+info:
+  title: Twitter API
+  description: |-
+    
+  contact:
+    email: tuanvanvo2003@gmail.com
+  version: 1.0.0
+servers:
+  - url: http://localhost:3000
+    description: Development server
+tags:
+  - name: users
+    description: Operations about user
+  
+  - name: tweets
+    description: Operations about tweets
+
+  - name: bookmarks
+    description: Operations about bookmarks
+
+  - name: likes
+    description: Operations about likes
+  
+  - name: search
+    description: Operations about search
+
+  - name: conversations
+    description: Operations about conversations
+
+paths:
+  /users/register:
+    post:
+      tags:
+        - users
+      summary: User register
+      description: Register a user
+      operationId: registerUser
+      requestBody:
+        description: Register an user
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RegisterBody'
+          application/xml:
+            schema:
+              $ref: '#/components/schemas/RegisterBody'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/RegisterBody'
+      responses:
+        default:
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message: 
+                    type: string
+                    example: 'User register successfully'
+                  result : 
+                    $ref: '#/components/schemas/AuthenticationResponse'
+            application/xml:
+              schema:
+                type: object
+                properties:
+                  message: 
+                    type: string
+                    example: 'User register successfully'
+                  result : 
+                    $ref: '#/components/schemas/AuthenticationResponse'
+  /users/login:
+    post:
+      tags:
+        - users
+      summary: User login
+      description: Login a user
+      operationId: loginUser
+      requestBody:
+        description: Login an user
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/LoginBody'
+          application/xml:
+            schema:
+              $ref: '#/components/schemas/LoginBody'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/LoginBody'
+      responses:
+        default:
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message: 
+                    type: string
+                    example: 'User login successfully'
+                  result : 
+                    $ref: '#/components/schemas/AuthenticationResponse'
+            application/xml:
+              schema:
+                $ref: '#/components/schemas/AuthenticationResponse'
+  /users/logout:
+    post:
+      tags:
+        - users
+      summary: Logs out current logged in user session
+      description: "Log out a user"
+      operationId: logoutUser
+      security:
+        - BearerAuth: []
+      requestBody:
+        description: Logout an user
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                refresh_token:
+                  type: string
+                  example: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoiNjYyN2JlMGU3MjIyMzI4ZjcyYmQzNjFlIiwidG9rZW5fdHlwZSI6MSwidmVyaWZ5IjowLCJpYXQiOjE3MzQ2Njc0NjEsImV4cCI6MTc0MzMwNzQ2MX0._RQW340ubFVvkRtAkZiObEoEghzGON2G4VONbsXYhdc'
+          application/xml:
+            schema:
+              type: object
+              properties:
+                refresh_token:
+                  type: string
+                  example: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoiNjYyN2JlMGU3MjIyMzI4ZjcyYmQzNjFlIiwidG9rZW5fdHlwZSI6MSwidmVyaWZ5IjowLCJpYXQiOjE3MzQ2Njc0NjEsImV4cCI6MTc0MzMwNzQ2MX0._RQW340ubFVvkRtAkZiObEoEghzGON2G4VONbsXYhdc'
+          application/x-www-form-urlencoded:
+            schema:
+              type: object
+              properties:
+                refresh_token:
+                  type: string
+                  example: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoiNjYyN2JlMGU3MjIyMzI4ZjcyYmQzNjFlIiwidG9rZW5fdHlwZSI6MSwidmVyaWZ5IjowLCJpYXQiOjE3MzQ2Njc0NjEsImV4cCI6MTc0MzMwNzQ2MX0._RQW340ubFVvkRtAkZiObEoEghzGON2G4VONbsXYhdc'
+      responses:
+        default:
+          description: successful operation
+          content:
+              application/json:
+                schema:
+                  type: object
+                  properties:
+                    message: 
+                      type: string
+                      example: 'User logout successfully'
+              application/xml:
+                schema:
+                  type: object
+                  properties:
+                    message: 
+                      type: string
+                      example: 'User logout successfully'
+  /users/me:
+    get:
+      tags:
+        - users
+      summary: Get current user
+      description: ''
+      operationId: getCurrentUser
+      security:
+        - BearerAuth: []
+      responses:
+        default:
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserProfile'
+            application/xml:
+              schema:
+                $ref: '#/components/schemas/UserProfile'
+    patch:
+      tags:
+        - users
+      summary: Update current user
+      description: Update current user
+      operationId: updateCurrentUser
+      security:
+        - BearerAuth: []
+      requestBody:
+        description: Update current user
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateUserProfile'
+          application/xml:
+            schema:
+              $ref: '#/components/schemas/UpdateUserProfile'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/UpdateUserProfile'
+      responses:
+        default:
+          description: successful operation
+  /users/forgot-password:
+    post:
+      tags:
+        - users
+      summary: Forgot password
+      description: Forgot password
+      operationId: forgotPassword
+      requestBody:
+        description: Forgot password
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                email:
+                  type: string
+                  format: email
+                  example: "tuanvanvo2003@gmail.com"
+          application/xml:
+            schema:
+                type: object
+                properties:
+                  email:
+                    type: string
+                    format: email
+                    example: "tuanvanvo2003@gmail.com"
+      responses:
+        default:
+          description: successful operation
+  /users/reset-password:
+    post:
+      tags:
+        - users
+      summary: Reset password
+      description: Reset password
+      operationId: resetPassword
+      requestBody:
+        description: Reset password
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ResetPasswordBody'
+          application/xml:
+            schema:
+              $ref: '#/components/schemas/ResetPasswordBody'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/ResetPasswordBody'
+      responses:
+        default:
+          description: successful operation
+  
+  /users/password:
+    put:
+      tags:
+        - users
+      summary: Change password
+      description: Change password
+      operationId: changePassword
+      security:
+        - BearerAuth: []
+      requestBody:
+        description: Change password
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ChangePasswordBody'
+          application/xml:
+            schema:
+              $ref: '#/components/schemas/ChangePasswordBody'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/ChangePasswordBody'
+      responses:
+        default:
+          description: successful operation
+
+  /users/follow/{id}:
+    post:
+      tags:
+        - users
+      summary: Follow user
+      description: Follow user
+      operationId: followUser
+      security:
+        - BearerAuth: []
+      requestBody:
+        description: Follow user
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                followed_user_id:
+                  type: string
+                  format: mongoId
+                  example: "6627be07-2228-f72bd361e"
+          application/xml:
+            schema:
+              type: object
+              properties:
+                followed_user_id:
+                  type: string
+                  format: mongoId
+                  example: "6627be07-2228-f72bd361e"
+          application/x-www-form-urlencoded:
+            schema:
+              type: object
+              properties:
+                followed_user_id:
+                  type: string
+                  format: mongoId
+                  example: "6627be07-2228-f72bd361e"
+      responses:
+        default:
+          description: successful operation
+    
+    delete:
+      tags:
+        - users
+      summary: Unfollow user
+      description: Unfollow user
+      operationId: unfollowUser
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          description: ID of user to unfollow
+          required: true
+          schema:
+            type: string
+            format: mongoId
+            example: "6627be07-2228-f72bd361e"
+      responses:
+        default:
+          description: successful operation
+  
+  /users/refresh-token:
+    post:
+      tags:
+        - users
+      summary: Refresh token
+      description: Refresh token
+      operationId: refreshToken
+      requestBody:
+        description: Refresh token
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                refresh_token:
+                  type: string
+                  example: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoiNjYyN2JlMGU3MjIyMzI4ZjcyYmQzNjFlIiwidG9rZW5fdHlwZSI6MSwidmVyaWZ5IjowLCJpYXQiOjE3MzQ2Njg1NjcsImV4cCI6MTc0MzMwODU2N30.5f7VrTkr98AXo5fAUGAYSls8lTlqyl8AQrdF_2P6jyU"
+          application/xml:
+             schema:
+              type: object
+              properties:
+                refresh_token:
+                  type: string
+                  example: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoiNjYyN2JlMGU3MjIyMzI4ZjcyYmQzNjFlIiwidG9rZW5fdHlwZSI6MSwidmVyaWZ5IjowLCJpYXQiOjE3MzQ2Njg1NjcsImV4cCI6MTc0MzMwODU2N30.5f7VrTkr98AXo5fAUGAYSls8lTlqyl8AQrdF_2P6jyU"
+          application/x-www-form-urlencoded:
+             schema:
+              type: object
+              properties:
+                refresh_token:
+                  type: string
+                  example: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoiNjYyN2JlMGU3MjIyMzI4ZjcyYmQzNjFlIiwidG9rZW5fdHlwZSI6MSwidmVyaWZ5IjowLCJpYXQiOjE3MzQ2Njg1NjcsImV4cCI6MTc0MzMwODU2N30.5f7VrTkr98AXo5fAUGAYSls8lTlqyl8AQrdF_2P6jyU"
+      responses:
+        default:
+          description: successful operation
+
+  /users/verify-email:
+    post:
+      tags:
+        - users
+      summary: Verify email
+      description: Verify email
+      operationId: verifyEmail
+      requestBody:
+        description: Verify email
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                email_verify_token:
+                  type: string
+                  example: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoiNjYyN2JlMGU3MjIyMzI4ZjcyYmQzNjFlIiwidG9rZW5fdHlwZSI6MSwidmVyaWZ5IjowLCJpYXQiOjE3MzQ2Njg1NjcsImV4cCI6MTc0MzMwODU2N30.5f7VrTkr98AXo5fAUGAYSls8lTlqyl8AQrdF_2P6jyU"
+          application/xml:
+            schema:
+              type: object
+              properties:
+                email_verify_token:
+                  type: string
+                  example: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoiNjYyN2JlMGU3MjIyMzI4ZjcyYmQzNjFlIiwidG9rZW5fdHlwZSI6MSwidmVyaWZ5IjowLCJpYXQiOjE3MzQ2Njg1NjcsImV4cCI6MTc0MzMwODU2N30.5f7VrTkr98AXo5fAUGAYSls8lTlqyl8AQrdF_2P6jyU"
+          application/x-www-form-urlencoded:
+            schema:
+              type: object
+              properties:
+                email_verify_token:
+                  type: string
+                  example: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoiNjYyN2JlMGU3MjIyMzI4ZjcyYmQzNjFlIiwidG9rZW5fdHlwZSI6MSwidmVyaWZ5IjowLCJpYXQiOjE3MzQ2Njg1NjcsImV4cCI6MTc0MzMwODU2N30.5f7VrTkr98AXo5fAUGAYSls8lTlqyl8AQrdF_2P6jyU"
+      responses:
+        default:
+          description: successful operation
+
+  /users/resend-verify-email:
+    post:
+      tags:
+        - users
+      summary: Resend verify email
+      description: Resend verify email
+      operationId: resendVerifyEmail
+      security:
+        - BearerAuth: []
+      responses:
+        default:
+          description: successful operation
+  /users/verify-forgot-password:
+    post:
+      tags:
+        - users
+      summary: Verify forgot password
+      description: Verify forgot password
+      operationId: verifyForgotPassword
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                forgot_password_token:
+                  type: string
+                  example: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoiNjYyN2JlMGU3MjIyMzI4ZjcyYmQzNjFlIiwidG9rZW5fdHlwZSI6MSwidmVyaWZ5IjowLCJpYXQiOjE3MzQ2Njg1NjcsImV4cCI6MTc0MzMwODU2N30.5f7VrTkr98AXo5fAUGAYSls8lTlqyl8AQrdF_2P6jyU"
+          application/xml:
+            schema:
+              type: object
+              properties:
+                forgot_password_token:
+                  type: string
+                  example: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoiNjYyN2JlMGU3MjIyMzI4ZjcyYmQzNjFlIiwidG9rZW5fdHlwZSI6MSwidmVyaWZ5IjowLCJpYXQiOjE3MzQ2Njg1NjcsImV4cCI6MTc0MzMwODU2N30.5f7VrTkr98AXo5fAUGAYSls8lTlqyl8AQrdF_2P6jyU"
+          application/x-www-form-urlencoded:
+            schema:
+              type: object
+              properties:
+                forgot_password_token:
+                  type: string
+                  example: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoiNjYyN2JlMGU3MjIyMzI4ZjcyYmQzNjFlIiwidG9rZW5fdHlwZSI6MSwidmVyaWZ5IjowLCJpYXQiOjE3MzQ2Njg1NjcsImV4cCI6MTc0MzMwODU2N30.5f7VrTkr98AXo5fAUGAYSls8lTlqyl8AQrdF_2P6jyU"
+      responses:
+        default:
+          description: successful operation
+  
+  /tweets:
+    post:
+      tags:
+        - tweets
+      summary: Create a tweet
+      description: Create a tweet
+      operationId: createTweet
+      security:
+        - BearerAuth: []
+      requestBody:
+        description: Register an user
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateTweetBody'
+          application/xml:
+            schema:
+              $ref: '#/components/schemas/CreateTweetBody'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/CreateTweetBody'
+      responses:
+        default:
+          description: successful operation
+    get:
+      tags:
+        - tweets
+      summary: Get tweets
+      description: Get tweets
+      operationId: getTweets
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: limit
+          in: query
+          description: Limit of tweets
+          required: false
+          schema:
+            type: integer
+            example: 10
+        - name: page
+          in: query
+          description: Page of tweets
+          required: false
+          schema:
+            type: integer
+            example: 1
+      responses:
+        default:
+          description: successful operation
+  /tweets/{tweetId}:
+    get:
+      tags:
+        - tweets
+      summary: Get a detail tweet
+      description: Get a detail tweet
+      operationId: getDetailTweet
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: tweetId
+          in: path
+          description: ID of tweet to get
+          required: true
+          schema:
+            type: string
+            format: mongoId
+            example: "6627be07-2228-f72bd361e"
+      responses:
+        default:
+          description: successful operation
+
+  /tweets/{tweetId}/children:
+    get:
+      tags:
+        - tweets
+      summary: Get children of a tweet
+      description: Get children of a tweet
+      operationId: getChildrenTweet
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: tweetId
+          in: path
+          description: ID of tweet to get children
+          required: true
+          schema:
+            type: string
+            format: mongoId
+            example: "6627be07-2228-f72bd361e"
+        - name: limit
+          in: query
+          description: Limit of children
+          required: false
+          schema:
+            type: integer
+            example: 10
+        - name: page
+          in: query
+          description: Page of children
+          required: false
+          schema:
+            type: integer
+            example: 1
+        - name: type
+          in: query
+          description: Type of children
+          required: false
+          schema:
+            type: number
+            enum:
+            - Tweet
+            - Retweet
+            - Comment
+            - QuoteTweet
+            example: 1
+      responses:
+        default:
+          description: successful operation
+
+  /bookmarks:
+    post :
+      tags:
+        - bookmarks
+      summary: Create a bookmark
+      description: Create a bookmark
+      operationId: createBookmark
+      security:
+        - BearerAuth: []
+      requestBody:
+        description: Create a bookmark
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                tweet_id:
+                  type: string
+                  format: mongoId
+                  example: "6627be07-2228-f72bd361e"
+          application/xml:
+            schema:
+              type: object
+              properties:
+                tweet_id:
+                  type: string
+                  format: mongoId
+                  example: "6627be07-2228-f72bd361e"
+          application/x-www-form-urlencoded:
+            schema:
+              type: object
+              properties:
+                tweet_id:
+                  type: string
+                  format: mongoId
+                  example: "6627be07-2228-f72bd361e"
+      responses:
+        default:
+          description: successful operation
+
+    delete:
+      tags:
+        - bookmarks
+      summary: Remove a bookmark
+      description: Remove a bookmark
+      operationId: removeBookmark
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: tweet_id
+          in: query
+          description: ID of tweet to remove bookmark
+          required: true
+          schema:
+            type: string
+            format: mongoId
+            example: "6627be07-2228-f72bd361e"
+      responses:
+        default:
+          description: successful operation
+  
+  /bookmarks/tweets:
+    delete:
+      tags:
+        - bookmarks
+      summary: Remove a bookmark by tweet id
+      description: Remove a bookmark by tweet id
+      operationId: removeBookmarkByTweetId
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: tweet_id
+          in: path
+          description: ID of tweet to remove bookmark
+          required: true
+          schema:
+            type: string
+            format: mongoId
+            example: "6627be07-2228-f72bd361e"
+      responses:
+        default:
+          description: successful operation
+
+  /likes:
+    post:
+      tags:
+        - likes
+      summary: Create a like
+      description: Create a like
+      operationId: createLike
+      security:
+        - BearerAuth: []
+      requestBody:
+        description: Create a like
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                tweet_id:
+                  type: string
+                  format: mongoId
+                  example: "6627be07-2228-f72bd361e"
+          application/xml:
+            schema:
+              type: object
+              properties:
+                tweet_id:
+                  type: string
+                  format: mongoId
+                  example: "6627be07-2228-f72bd361e"
+          application/x-www-form-urlencoded:
+            schema:
+              type: object
+              properties:
+                tweet_id:
+                  type: string
+                  format: mongoId
+                  example: "6627be07-2228-f72bd361e"
+      responses:
+        default:
+          description: successful operation
+    
+    delete:
+      tags:
+        - likes
+      summary: Remove a like
+      description: Remove a like
+      operationId: removeLike
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: tweet_id
+          in: query
+          description: ID of tweet to remove like
+          required: true
+          schema:
+            type: string
+            format: mongoId
+            example: "6627be07-2228-f72bd361e"
+      responses:
+        default:
+          description: successful operation
+  
+  /search:
+    get:
+      tags:
+        - search a tweet
+      summary: Search a tweet
+      description: Search a tweet
+      operationId: searchTweet
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: content
+          in: query
+          description: Query content to search
+          required: true
+          schema:
+            type: string
+            example: "hello"
+        - name: limit
+          in: query
+          description: Limit of search
+          required: false
+          schema:
+            type: integer
+            example: 10
+        - name: page
+          in: query
+          description: Page of search
+          required: false
+          schema:
+            type: integer
+            example: 1
+      responses:
+        default:
+          description: successful operation
+
+  /conversations/reciever:
+    get:
+      tags:
+        - conversations
+      summary: Get reciever
+      description: Get reciever
+      operationId: getReciever
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: reciever_id
+          in: path
+          description: ID of reciever
+          required: true
+          schema:
+            type: string
+            format: mongoId
+            example: "6627be07-2228-f72bd361e"
+      responses:
+        default:
+          description: successful operation

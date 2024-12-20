@@ -19,6 +19,27 @@ import { ObjectId } from 'mongodb'
 import Conversation from './models/schemas/Conversation.schema'
 import conversationRouter from './routes/conversations.routes'
 import cors from 'cors'
+import swaggerJsdoc from 'swagger-jsdoc'
+import swaggerUi from 'swagger-ui-express'
+
+const options = {
+  definition: {
+    openapi: '3.0.3',
+    info: {
+      title: 'Social Media API',
+      version: '1.0.0',
+      description: 'API for social media app',
+      contact: {
+        name: 'Tuan Vo',
+        email: 'tuanvanvo2003@gmail.com',
+        url: 'https://titus-portfolio.vercel.app'
+      }
+    }
+  },
+  apis: ['./swagger/*.yaml']
+}
+
+const swaggerDocs = swaggerJsdoc(options)
 
 databaseServices.connect().then(() => {
   databaseServices.indexUsers()
@@ -34,12 +55,14 @@ const port = process.env.PORT || 3000
 initFolder()
 
 const corsOptions = {
-  origin: 'http://localhost:3001',
+  // allow all
+  origin: true,
   credentials: true, //access-control-allow-credentials:true
   optionSuccessStatus: 200
 }
 app.use(cors(corsOptions))
 app.use(express.json())
+app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocs))
 app.use('/users', usersRouter)
 app.use('/medias', mediasRouter)
 app.use('/tweets', tweetsRouter)

@@ -1,0 +1,267 @@
+components:
+  securitySchemes:
+    BearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT 
+
+  schemas:
+    LoginBody:
+      type: object
+      properties:
+        email:
+          type: string
+          description: Email of the user
+          example: tuanvanvo2003@gmail.com
+        password:
+          type: string
+          description: Password of the user
+          example: '123456'
+
+    RegisterBody:
+      type: object
+      properties:
+        name:
+          type: string
+          description: The username of the new user
+          example: tuanvo100
+        email:
+          type: string
+          format: email
+          description: The email address of the new user
+          example: tuanvv.21it+9@vku.udn.vn
+        password:
+          type: string
+          format: password
+          description: The password for the user account
+          example: Tuan123!
+        confirm_password:
+          type: string
+          description: Confirm the password
+          example: Tuan123!
+        date_of_birth:
+          type: string
+          description: The date of birth of the user
+          example: 2023-08-11T12:48:03.582Z
+      required:
+        - name
+        - email
+        - password
+        - confirm_password
+        - date_of_birth
+
+    AuthenticationResponse:
+      type: object
+      properties:
+        access_token:
+          type: string
+          description: Access token of the user
+          example: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoiNjYyN2JlMGU3MjIyMzI4ZjcyYmQzNjFlIiwidG9rZW5fdHlwZSI6MCwidmVyaWZ5IjowLCJpYXQiOjE3MzQ1MjU4OTMsImV4cCI6MTczNDU2MTg5M30.P7J60NItOi2RMa_neq_hysT-d5RCO35IzXbmL06rR3k'
+        refresh_token:
+            type: string
+            description: Access token of the user
+            example: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoiNjYyN2JlMGU3MjIyMzI4ZjcyYmQzNjFlIiwidG9rZW5fdHlwZSI6MSwidmVyaWZ5IjowLCJpYXQiOjE3MzQ1MjU4OTMsImV4cCI6MTc0MzE2NTg5M30.kNd4tuQQYfw4B5LLroYiFtXmU1WY5Vh0fD5fvCSK4p4
+    
+    UserProfile:
+      type: object
+      properties:
+        id:
+          type: string
+          format: mongoId
+          description: The id of the user
+          example: 6627be0e722238f72bd361e
+        name:
+          type: string
+          format: string
+          description: The name of the user
+          example: tuanvo100
+        email:
+          type: string
+          format: email
+          description: The email address of the user
+          example: tuanvanvo2003@gmail.com
+        date_of_birth:
+          type: string
+          format: date
+          description: The date of birth of the user
+          example: 2023-08-11T12:48:03.582Z
+        created_at:
+          type: string
+          format: date
+          description: Created date of the user
+          example: 2023-08-11T12:48:03.582Z
+        updated_at:
+          type: string
+          description: Updated date of the user
+          example: 2023-08-11T12:48:03.582Z
+        verified:
+          type: number
+          enum:
+            - Unverified
+            - Verified
+            - Banned
+          description: The status of the user
+          example: 1
+        bio : 
+          type: string
+          description: The bio of the user
+          example: 'I am a student'
+        location:
+          type: string
+          description: The location of the user
+          example: 'Da Nang'
+        website:
+          type: string
+          description: The website of the user
+          example: 'https://vku.udn.vn'
+        username:
+          type: string
+          description: The username of the user
+          example: 'tuanvo100'
+        avatar:
+          type: string
+          description: The avatar of the user
+          example: 'https://vku.udn.vn'
+        cover_photo:
+          type: string
+          description: The cover photo of the user
+          example: 'https://vku.udn.vn'
+        twitter_circle :
+          type: array
+          description: The twitter circle of the user
+          example: ["6627be0e7222328f72bd361e"]
+
+    UpdateUserProfile:
+      type: object
+      properties:
+        name:
+          type: string
+          format: string
+          description: The name of the user
+          example: tuanvo100
+        email:
+          type: string
+          format: email
+          description: The email address of the user
+          example: tuanvanvo2003@gmail.com
+        date_of_birth:
+          type: string
+          format: date
+          description: The date of birth of the user
+          example: 2023-08-11T12:48:03.582Z
+        bio : 
+          type: string
+          description: The bio of the user
+          example: 'I am a student'
+        location:
+          type: string
+          description: The location of the user
+          example: 'Da Nang'
+        website:
+          type: string
+          description: The website of the user
+          example: 'https://vku.udn.vn'
+        username:
+          type: string
+          description: The username of the user
+          example: 'tuanvo100'
+        avatar:
+          type: string
+          description: The avatar of the user
+          example: 'https://vku.udn.vn'
+        cover_photo:
+          type: string
+          description: The cover photo of the user
+          example: 'https://vku.udn.vn'
+   
+    
+    ResetPasswordBody:
+      type: object
+      properties:
+        password:
+          type: string
+          description: The password of the user
+          example: 'Tuan123!'
+        confirm_password:
+          type: string
+          description: Confirm the password
+          example: 'Tuan123!'
+        forgot_password_token:
+          type: string
+          description: The forgot password token
+          example: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoiNjYyN2JlMGU3MjIyMzI4ZjcyYmQzNjFlIiwidG9rZW5fdHlwZSI6MSwidmVyaWZ5IjowLCJpYXQiOjE3MzQ2Njc0NjEsImV4cCI6MTc0MzMwNzQ2MX0._RQW340ubFVvkRtAkZiObEoEghzGON2G4VONbsXYhdc'
+      required:
+        - password
+        - confirm_password
+        - forgot_password_token
+
+    ChangePasswordBody:
+      type: object
+      properties:
+        old_password:
+          type: string
+          description: The old password of the user
+          example: 'Tuan123!'
+        password:
+          type: string
+          description: The new password of the user
+          example: 'Tuan123!'
+        confirm_password:
+          type: string
+          description: Confirm the password
+          example: 'Tuan123!'
+      required:
+        - old_password
+        - password
+        - confirm_password
+
+    CreateTweetBody:
+      type: object
+      properties:
+        type:
+          type: number
+          description: The type of the tweet
+          enum:
+            - Tweet
+            - Retweet
+            - Comment
+            - QuoteTweet
+          example: 2
+        audience:
+          type: number
+          description: The audience of the tweet
+          enum:
+            - Everyone
+            - TwitterCircle
+          example: 0
+        content: 
+          type: string
+          description: The content of the tweet
+          example: 'Hello World'
+        parent_id:
+          type: string
+          format: mongoId
+          description: The parent id of the tweet
+          example: '6627be0e722238f72bd361e'
+        hashtags:
+          type: array
+          description: The hashtags of the tweet
+          example: ["#vku", "#udn"]
+        mentions:
+          type: array
+          description: Users mentioned in the tweet
+          example: ["6627be0e722238f72bd361e","1263be0e722238f72bd363a"]
+        medias:
+          type: array
+          description: The medias of the tweet
+          example: [{"url": "https://vku.udn.vn", "type": "image"}]
+      required:
+        - type
+        - content
+        - audience
+        - parent_id
+        - hashtags
+        - mentions
+        - medias
+    
+
