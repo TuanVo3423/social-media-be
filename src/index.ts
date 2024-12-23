@@ -22,7 +22,15 @@ import cors from 'cors'
 import swaggerJsdoc from 'swagger-jsdoc'
 import swaggerUi from 'swagger-ui-express'
 import helmet from 'helmet'
+import { rateLimit } from 'express-rate-limit'
 import { envConfigs } from './constants/config'
+
+const limiter = rateLimit({
+  windowMs: 15 * 60 * 1000,
+  limit: 100,
+  standardHeaders: 'draft-8',
+  legacyHeaders: false
+})
 
 const options = {
   definition: {
@@ -62,6 +70,7 @@ const corsOptions = {
   credentials: true, //access-control-allow-credentials:true
   optionSuccessStatus: 200
 }
+app.use(limiter)
 app.use(helmet())
 app.use(cors(corsOptions))
 app.use(express.json())
