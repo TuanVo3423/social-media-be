@@ -21,6 +21,7 @@ import conversationRouter from './routes/conversations.routes'
 import cors from 'cors'
 import swaggerJsdoc from 'swagger-jsdoc'
 import swaggerUi from 'swagger-ui-express'
+import { envConfigs } from './constants/config'
 
 const options = {
   definition: {
@@ -50,7 +51,7 @@ databaseServices.connect().then(() => {
 })
 const app = express()
 const httpServer = createServer(app)
-const port = process.env.PORT || 3000
+const port = envConfigs.PORT
 
 initFolder()
 

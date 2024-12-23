@@ -2,6 +2,7 @@ import { NextFunction, Request, Response } from 'express'
 import { ParamsDictionary } from 'express-serve-static-core'
 import { ObjectId } from 'mongodb'
 import { TWITTER_USERNAME_REGEX } from '~/constants/common'
+import { envConfigs } from '~/constants/config'
 import { UserVerifyStatus } from '~/constants/enums'
 import { HTTP_STATUS } from '~/constants/httpStatus'
 import { USER_MESSAGES } from '~/constants/message'
@@ -46,7 +47,7 @@ export const oauthController = async (req: Request, res: Response) => {
   const { code } = req.query
   const data = await userServices.oauth(code as string)
   return res.redirect(
-    `${process.env.CLIENT_REDIRECT_CALLBACK}?access_token=${data.access_token}&refresh_token=${data.refresh_token}&verify=${data.verify}`
+    `${envConfigs.CLIENT_REDIRECT_CALLBACK}?access_token=${data.access_token}&refresh_token=${data.refresh_token}&verify=${data.verify}`
   )
 }
 

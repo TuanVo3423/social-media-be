@@ -13,6 +13,7 @@ import { validate } from '~/utils/validation'
 import { ObjectId } from 'mongodb'
 import { TokenPayload } from '~/models/requests/users.requests'
 import { UserVerifyStatus } from '~/constants/enums'
+import { envConfigs } from '~/constants/config'
 
 const passwordSchema: ParamSchema = {
   notEmpty: {
@@ -107,7 +108,7 @@ const forgotPasswordTokenSchema: ParamSchema = {
       try {
         const decoded_forgot_password_verify_token = await verifyToken({
           token: value,
-          privateKey: process.env.JWT_SECRET_FORGOT_PASSWORD_TOKEN as string
+          privateKey: envConfigs.JWT_SECRET_FORGOT_PASSWORD_TOKEN
         })
 
         const { user_id } = decoded_forgot_password_verify_token
@@ -267,7 +268,7 @@ export const accessTokenValidator = validate(
             try {
               const decoded_authorization = await verifyToken({
                 token: access_token,
-                privateKey: process.env.JWT_SECRET_ACCESS_TOKEN as string
+                privateKey: envConfigs.JWT_SECRET_ACCESS_TOKEN
               })
               ;(req as Request).decoded_authorization = decoded_authorization
             } catch (error) {
@@ -302,7 +303,7 @@ export const refreshTokenValidator = validate(
               // verify
               // loi khong co trong database va loi verify
               const [decoded_refresh_token, refresh_token] = await Promise.all([
-                verifyToken({ token: value, privateKey: process.env.JWT_SECRET_REFRESH_TOKEN as string }),
+                verifyToken({ token: value, privateKey: envConfigs.JWT_SECRET_REFRESH_TOKEN }),
                 databaseServices.refreshToken.findOne({ token: value })
               ])
               if (refresh_token === null) {
@@ -348,7 +349,7 @@ export const emailVerifyTokenValidator = validate(
             try {
               const decoded_email_verify_token = await verifyToken({
                 token: value,
-                privateKey: process.env.JWT_SECRET_EMAIL_VERIFY_TOKEN as string
+                privateKey: envConfigs.JWT_SECRET_EMAIL_VERIFY_TOKEN
               })
               if (decoded_email_verify_token === null) {
                 throw new ErrorWithStatus({

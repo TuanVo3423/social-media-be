@@ -2,7 +2,8 @@ node_modules/
 dist/
 
 # local env files
-.env
+.env*
+!.env.example
 
 # user uploads
 uploads/
