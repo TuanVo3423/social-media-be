@@ -21,6 +21,7 @@ import conversationRouter from './routes/conversations.routes'
 import cors from 'cors'
 import swaggerJsdoc from 'swagger-jsdoc'
 import swaggerUi from 'swagger-ui-express'
+import helmet from 'helmet'
 import { envConfigs } from './constants/config'
 
 const options = {
@@ -61,6 +62,7 @@ const corsOptions = {
   credentials: true, //access-control-allow-credentials:true
   optionSuccessStatus: 200
 }
+app.use(helmet())
 app.use(cors(corsOptions))
 app.use(express.json())
 app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocs))
