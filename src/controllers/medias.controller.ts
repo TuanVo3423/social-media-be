@@ -33,6 +33,12 @@ export const serveImageController = (req: Request, res: Response, next: NextFunc
   })
 }
 
+export const getVersion = (req: Request, res: Response, next: NextFunction) => {
+  return res.json({
+    version: 1
+  })
+}
+
 export const serveVideoStreamController = (req: Request, res: Response, next: NextFunction) => {
   // get header range from client
   const range = req.headers.range

@@ -11,13 +11,13 @@ const s3 = new S3({
   }
 })
 
-s3.listBuckets({})
-  .then((data) => {
-    console.log(data)
-  })
-  .catch((error) => {
-    console.error(error)
-  })
+// s3.listBuckets({})
+//   .then((data) => {
+//     console.log(data)
+//   })
+//   .catch((error) => {
+//     console.error(error)
+//   })
 
 // const file = fs.readFileSync(path.resolve('uploads/images/panda.jpg'))
 
@@ -30,23 +30,26 @@ export const handleUploadToS3 = async ({
   filePath: string
   contentType: string
 }) => {
-  const parallelUploads3 = new Upload({
-    client: s3 || new S3Client({}),
-    params: {
-      Bucket: envConfigs.AWS_S3_BUCKET_NAME,
-      Key: fileName,
-      Body: fs.readFileSync(path.resolve(filePath)),
-      ContentType: contentType
-    },
+  // const parallelUploads3 = new Upload({
+  //   client: s3 || new S3Client({}),
+  //   params: {
+  //     Bucket: envConfigs.AWS_S3_BUCKET_NAME,
+  //     Key: fileName,
+  //     Body: fs.readFileSync(path.resolve(filePath)),
+  //     ContentType: contentType
+  //   },
 
-    tags: [
-      /*...*/
-    ], // optional tags
-    queueSize: 4, // optional concurrency configuration
-    partSize: 1024 * 1024 * 5, // optional size of each part, in bytes, at least 5MB
-    leavePartsOnError: false // optional manually handle dropped parts
-  })
-  return parallelUploads3.done()
+  //   tags: [
+  //     /*...*/
+  //   ], // optional tags
+  //   queueSize: 4, // optional concurrency configuration
+  //   partSize: 1024 * 1024 * 5, // optional size of each part, in bytes, at least 5MB
+  //   leavePartsOnError: false // optional manually handle dropped parts
+  // })
+  // return parallelUploads3.done()
+  return {
+    Location: "vn"
+  }
 }
 
 // parallelUploads3.on('httpUploadProgress', (progress) => {
